@@ -1,4 +1,4 @@
-# испортируем модули стандартнй библиотеки uuid и datetime
+# импортируем модули стандартнй библиотеки uuid и datetime
 import uuid
 import datetime
 
@@ -116,12 +116,12 @@ def find(u_id, session):
 
         atheletes = session.query(Athelete).all()
         # создаём словари для дат рождения и роста атлетов
-        birthdate_dict = {athelete.birthdate: athelete.id for athelete in atheletes} # словарь с датами рождения атлетов в качестве ключей. В качестве значений - id атлетов
-        height_dict = {athelete.height: athelete.id for athelete in atheletes} # словарь с ростом атлетов в качестве ключей. В качестве значений - id атлетов      
+        birthdate_dict = {athelete.id: athelete.birthdate for athelete in atheletes} # словарь с id атлетов в качестве ключей. В качестве значений - даты рождения атлетов
+        height_dict = {athelete.id: athelete.height for athelete in atheletes} # словарь с id атлетов в качестве ключей. В качестве значений - рост атлетов       
 
-        diff_birthdate = 1000000000 # Устанавливаем заведомо сильно завышенную разность дат рождения
+        diff_birthdate = 1000000000 # Устанавливаем заведомо сильно завышенную начальную разность дат рождения
         # Проходимся по парам ключ:значение словаря с датами рождения атлетов
-        for a_bd, a_id in birthdate_dict.items():
+        for a_id, a_bd  in birthdate_dict.items():
             # Вычисляем настоящую разность дат рождения  между пользователем и очередным атлетом при помощи функции date_diff(u_birthdate, a_bd). Она определена выше ↑↑↑
             min_diff_birthdate = date_diff(u_birthdate, a_bd)
             # Если разность, вычисленная на текущем шаге, меньше diff_birthdate
@@ -131,11 +131,11 @@ def find(u_id, session):
                 # Извлекаем в переменную id атлета с ближайшей датой рождения
                 a_min_diff_bd_id = a_id
 
-        diff_height = 10000 # Устанавливаем заведомо сильно завышенную разность в росте
+        diff_height = 10000 # Устанавливаем заведомо сильно завышенную начальную разность в росте
         # В случае, если в таблице athelete отсутствует поле "height" или оно не заполнено (рост атлета не указан), назначаем принудительно id = -1
         a_min_diff_hgh_id = -1            
         # Проходимся по парам ключ:значение словаря с ростом атлетов
-        for a_hgh, a_id in height_dict.items():
+        for a_id, a_hgh in height_dict.items():
             # Если у атлета в базе данных указан его рост
             if a_hgh is not None:
                 # Вычисляем настоящую разность в росте между пользователем и очередным атлетом
@@ -184,7 +184,6 @@ def main():
     find_id = int(input("Введите идентификатор пользователя для поиска: "))
     # вызываем функцию печати на экран результатов поиска. Первым аргуменом в неё передаём вызов функции find(find_id, session), которая возвращает id атлетов, удовлетворяющих условию задачи (ближайшего по дате рождения и ближайшего по росту)
     a_bd, a_h = find(find_id, session)
-    # if not (a_bd == -1 or a_h == -1):
     print_athelete_list(a_bd, a_h, "Атлет, ближайший по дате рождения:\n", "Атлет, ближайший по росту:\n", session)  
 
 if __name__ == "__main__":
